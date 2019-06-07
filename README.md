@@ -17,7 +17,7 @@ Kubernetes:
   * for example, all etcd member Pods have a name like "example-N-xxxxx" where
     N=1..5.  This allows the script to reference which etcd member to recover
 * You start out with a running five member etcd cluster built using this template
-* Your k8s cluster/context is setup so you can do a `kubectl exec -ti` to
+* Your k8s cluster/context is setup so you can do a `kubectl exec` to
   any etcd member Pod
 * The etcd member Pods use ephemeral storage (i.e., when they restart, their
   data is wiped)
