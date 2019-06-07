@@ -209,6 +209,7 @@ Note all members are present and the etcd cluster is in good health.
 ## Test cases
 
 * Individual etcd members restart (see source/tests/single.sh)
+
 * Two etcd members restart, test all combinations (see source tests/multiple.sh)
   * Try all combinations via tweaking the script as mentioned in the comment
   * todo: make more scripts so you don't have to tweak
@@ -218,9 +219,21 @@ Note all members are present and the etcd cluster is in good health.
 * Attempt to recover a health etcd member
   * Script aborts saying it's already healthy.
 
-* any two etcd members restart
+* Recover a non-existent etcd member (i.e., add a new member)
+  * Script adds a new member (this is how you can scale up)
+
+* Remove an existing etcd member
+  * `rm_etcd.sh (num)` removes an etcd member (this is how you can scale down)
+
+* Remove an non-existing etcd member
+  * Not tested
+
+* any N etcd members restart
   * etcd_recovery.sh (any of the bad ones)
   * etcd_recovery.sh (the other bad one)
+  * etcd_recovery.sh (the other bad one)
+  * until they are all up
+  * todo: allow user to do `etcd_recover.sh x,y,z`
 
 * recover when pod already gone
   * script realizes it's gone and moves on with recovery
