@@ -107,12 +107,6 @@ cat ${NAME}-deployment.yaml | \
     sed "s#{{ etcd_member_list }}#$ETCD_INITIAL_CLUSTER#g" |
     sed "s#new#$ETCD_INITIAL_CLUSTER_STATE#g" > tmp_out
 
-#cat ${NAME}-tmpfs-deployment.yaml | \
-#    sed "s#{{ database_node_ord }}#$num#g" |
-#    sed "s#{{ etcd_image_uri }}#$IMAGE#g" |
-#    sed "s#{{ etcd_member_list }}#$ETCD_INITIAL_CLUSTER#g" |
-#    sed "s#new#$ETCD_INITIAL_CLUSTER_STATE#g" > tmp_out
-
 kubectl apply -f tmp_out
 
 # Wait up to 60 seconds for new pod to come up.
