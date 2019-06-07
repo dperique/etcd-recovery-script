@@ -1,0 +1,65 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: example-{{ etcd_num }}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: etcd
+        etcd-member: example{{ etcd_num }}
+      name: example{{ etcd_num }}
+    spec:
+      containers:
+      - command:
+        - /usr/local/bin/etcd
+        - --name
+        - example{{ etcd_num }}
+        - --initial-advertise-peer-urls
+        - http://example{{ etcd_num }}:2380
+        - --listen-peer-urls
+        - http://0.0.0.0:2380
+        - --listen-client-urls
+        - http://0.0.0.0:2379
+        - --advertise-client-urls
+        - http://example{{ etcd_num }}:2379
+        - --initial-cluster
+        - example1=http://example1:2380,example2=http://example2:2380,example3=http://example3:2380,example4=http://example4:2380,example5=http://example5:2380
+        - --data-dir
+        - /var/data
+        - --initial-cluster-state
+        - new
+        image: {{ etcd_image }}
+        name: example{{ etcd_num }}
+        ports:
+        - containerPort: 2379
+          name: client
+          protocol: TCP
+        - containerPort: 2380
+          name: server
+          protocol: TCP
+        volumeMounts:
+          - name: etcd-data
+            mountPath: /var/data
+      volumes:
+      - name: etcd-data
+        emptyDir: {}
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: example{{ etcd_num }}
+spec:
+  ports:
+  - name: client
+    port: 2379
+    protocol: TCP
+    targetPort: 2379
+  - name: server
+    port: 2380
+    protocol: TCP
+    targetPort: 2380
+  selector:
+    etcd-member: example{{ etcd_num }}
