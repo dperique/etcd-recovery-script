@@ -7,7 +7,6 @@ NAME=example
 for num in {1..5}; do
 
     # Delete an etcd member pod.
-    #m1=$(kubectl get po | grep ${NAME}-${num} | sed -n ${n}p | awk {'print $1'})
     m1=$(kubectl get po | grep ${NAME}-${num} | awk {'print $1'})
     kubectl delete po $m1
 
