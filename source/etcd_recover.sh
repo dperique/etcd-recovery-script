@@ -139,7 +139,7 @@ for i in {1..10}; do
         cat final-health.tmp
         break
     else
-        "Waiting for ${NAME} cluster to be healthy"
+        echo "Waiting for ${NAME} cluster to be healthy"
         sleep 5
     fi
 done
