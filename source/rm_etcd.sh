@@ -3,7 +3,7 @@ if [ "$1" == "" ]; then
   exit 1
 fi
 num=$1
-NAME="etcd-decap"
+NAME="example"
 echo "Removing ${NAME}-${num} ..."
 echo ""
 
