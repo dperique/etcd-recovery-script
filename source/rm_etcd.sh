@@ -7,7 +7,8 @@ NAME="example"
 echo "Removing ${NAME}-${num} ..."
 echo ""
 
-set -x
+# Uncomment this for debugging.
+#set -x
 
 # Get the pod name that we want to be deleted.
 #

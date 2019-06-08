@@ -210,6 +210,90 @@ Done.
 
 Note all members are present and the etcd cluster is in good health.
 
+## Add a new etcd member (scaling up the etcd cluster)
+
+Since recovery where you "add back an etcd member that was removed earlier"
+involves re-creating the missing etcd member, `etcd_recovery.sh` can be used to
+scale up the number of etcd members.
+
+For example, if you started out with 5 etcd members using the example etcd cluster,
+you can add a sixth member like this:
+
+```
+ ./etcd_recover.sh 6
+Recovering example-6 ...
+
+example-6 pod is already gone
+Sleeping ...
+example-6 pod is gone
+Using alternate bad id search method
+No bad members present in member list
+It's because the bad member 6 is already gone; continuing ...
+deployment.extensions/example-6 created
+service/example6 created
+Sleeping ...
+New example-6 pod is up
+Wait a few seconds for it to join the etcd cluster
+command terminated with exit code 5
+Waiting for example cluster to be healthy
+example cluster looks healthy
+
+member 10cd19f5dff12f8 is healthy: got healthy result from http://example1:2379
+member 5d4f3378e2211d1e is healthy: got healthy result from http://example6:2379
+member 9cb03bdcad5f9db7 is healthy: got healthy result from http://example4:2379
+member a477df17b2f6cccf is healthy: got healthy result from http://example2:2379
+member c46fc1decca979cd is healthy: got healthy result from http://example3:2379
+member eea200154b9a0634 is healthy: got healthy result from http://example5:2379
+cluster is healthy
+
+Done.
+
+$ kubectl get po|grep example
+example-1-fc77f7c56-fvzn8           1/1       Running   0          6m5s
+example-2-9f786454-84k7t            1/1       Running   0          6m5s
+example-3-7c5f7d6568-5dx7v          1/1       Running   0          6m4s
+example-4-548b4cd97d-dkjsn          1/1       Running   0          6m4s
+example-5-8499f5cf6-75lxg           1/1       Running   0          6m3s
+example-6-889688455-px7kj           1/1       Running   0          4m33s
+```
+
+You probably want an odd number of members so you should add another member like
+this: `./etcd_recover.sh 7".
+
+## Removing an etcd member (scaling down the etcd cluster)
+
+You can remove etcd members using `rm_etcd.sh` like this:
+
+```
+$ ./rm_etcd.sh 6
+Removing example-6 ...
+
+Removed member ad0af43433eb2f0 from cluster
+deployment.extensions "example-6" deleted
+service "example6" deleted
+Sleeping ...
+example-6 pod is still there
+Sleeping ...
+example-6 pod is gone
+example cluster looks healthy
+
+member 10cd19f5dff12f8 is healthy: got healthy result from http://example1:2379
+member 9cb03bdcad5f9db7 is healthy: got healthy result from http://example4:2379
+member a477df17b2f6cccf is healthy: got healthy result from http://example2:2379
+member c46fc1decca979cd is healthy: got healthy result from http://example3:2379
+member eea200154b9a0634 is healthy: got healthy result from http://example5:2379
+cluster is healthy
+
+Done.
+
+$ kubectl get po| grep example
+example-1-fc77f7c56-fvzn8           1/1       Running   0          14m
+example-2-9f786454-84k7t            1/1       Running   0          14m
+example-3-7c5f7d6568-5dx7v          1/1       Running   0          14m
+example-4-548b4cd97d-dkjsn          1/1       Running   0          14m
+example-5-8499f5cf6-75lxg           1/1       Running   0          14m
+```
+
 ## Test cases
 
 * Individual etcd members restart (see source/tests/single.sh)
