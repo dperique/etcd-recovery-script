@@ -8,9 +8,11 @@ does more, I recommend [etcd-operator](https://github.com/coreos/etcd-operator).
 this because I wanted to manage an etcd cluster that was created by my team and with our
 own customizations that were not supported by etcd-operator.
 
-To recover an existing etcd member, use the `etcd_recovery.sh` script.
-To add a new etcd member (scale up), recovery a non-existing etcd member.
-To remove etcd members (scale down), use the `rm_etcd.sh` script.
+Here are the different operations:
+
+* To recover an existing etcd member, use the `etcd_recovery.sh` script.
+* To add a new etcd member (scale up), recover a non-existing etcd member.
+* To remove etcd members (scale down), use the `rm_etcd.sh` script.
 
 My assumption is that you have this in the case of a five member etcd cluster on
 Kubernetes:
