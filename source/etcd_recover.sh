@@ -29,6 +29,11 @@ IMAGE=$(kubectl get po $m1 --output='jsonpath={.spec.containers[0].image}')
 t=$(kubectl get deployments | grep ${NAME}-${num} | wc -l)
 if [ $t -ne 0 ]; then
     kubectl delete deployments ${NAME}-${num}
+
+    # One day, we'll just set replicas to 0 instead of deleting
+    # the deployment; but we'll have to patch the yaml as needed.
+    #
+    #kubectl patch deployment ${NAME}-${num} -p '{"spec":{"replicas": 0}}'
 fi
 
 # Wait up to 60 seconds for the pod to go away.
@@ -100,6 +105,35 @@ if [ $match_count -ne 0 ]; then
 fi
 kubectl exec  $m1 -- etcdctl member add ${NAME}${num} http://${NAME}${num}:2380 | grep ETCD_INITIAL > tmp_out1
 source tmp_out1
+
+# This is the idea we want but it won't work because bash
+# does not expand the value of ETCD_INITIAL_CLUSTER since
+# it's inside single quotes.
+#
+#kubectl patch deployments ${NAME}-${num} --type='json' \
+#                  -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/command/12", "value":"$ETCD_INITIAL_CLUSTER"}]'
+#kubectl patch deployments ${NAME}-${num} --type='json' \
+#                  -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/command/19", "value":"$ETCD_INITIAL_CLUSTER_STATE"}]'
+
+# Another idea we can use to update the yaml for by reading
+# it in and using python to update it and print it out stdout
+# where we can capture it and then apply it.
+#
+# This gets the original deployment yaml but strips out the
+# spec and status sections so you can use it to patch.
+#
+# kubectl get deployments ${NAME}-${num} -o yaml | sed -n '/^spec:$/,$p' | sed -e '/^status:$/,$d' > new.out
+
+# This takes new.out and replaces the two variables ETCD_INITIAL_CLUSTER and
+# ETCD_INITIAL_CLUSTER_STATE and sends the output to tmp_out where it can later
+# be applied via kubectl.
+#
+# python ../experiment/dyaml.py > tmp_out
+
+# One day, once we get it working, we'll just patch replicas back to
+# one to avoid having to apply the full yaml.
+#
+#kubectl patch deployment ${NAME}-${num} -p '{"spec":{"replicas": 1}}'
 
 cat ${NAME}-deployment.yaml | \
     sed "s#{{ etcd_num }}#$num#g" |
