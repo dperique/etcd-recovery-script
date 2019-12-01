@@ -129,7 +129,7 @@ source tmp_out1
 # be applied via kubectl.
 #
 # python ../experiment/dyaml.py > tmp_out
-
+# kubectl patch deployments ${NAME}-${num} --patch "$(cat tmp.out)"
 # One day, once we get it working, we'll just patch replicas back to
 # one to avoid having to apply the full yaml.
 #
